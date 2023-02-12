@@ -19,13 +19,15 @@ public class PartidaGoogleDTO implements Serializable{
 	
 	//EQUIPE CASA
 	private String nomeEquipeCasa;
-	private String urlLogoEquipeCasa;
+	//private String urlLogoEquipeCasa;
 	private String golsEquipeCasa;
-	private String placarEstendidoEquipeCasa;
+	private Integer placarEquipeCasa;
+	private Integer placarEstendidoEquipeCasa;
 	
 	//EQUIPE VISITANTE
 	private String nomeEquipeVisitante;
-	private String urlLogoEquipeVisitante;
+	//private String urlLogoEquipeVisitante;
 	private String golsEquipeVisitante;
-	private String placarEstendidoEquipeVisitante;
+	private Integer placarEquipeVisitante;
+	private Integer placarEstendidoEquipeVisitante;
 }

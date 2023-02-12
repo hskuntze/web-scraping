@@ -38,9 +38,10 @@ public class ScrappingUtil {
 	private static final String DIV_VISITOR_SCORING_PLAYERS = "div[class*=imso_gs__right-team]";
 
 	public static void main(String[] args) {
-		String url = BASE_URL_GOOGLE + "brasil+x+croacia+09/12" + COMPLEMENTO_URL_GOOGLE;
-
 		ScrappingUtil scrapping = new ScrappingUtil();
+		
+		String url = scrapping.assembleGoogleURL("são paulo", "santos");
+
 		scrapping.getMatchInfo(url);
 	}
 
@@ -54,35 +55,60 @@ public class ScrappingUtil {
 			String title = doc.title();
 			LOGGER.info("Título da página: {}", title);
 
+			//STATUS DA PARTIDA
 			String matchStatus = handleMatchStatus(getMatchStatus(doc));
 			LOGGER.info("Status da partida: {}", matchStatus);
+			partida.setStatusPartida(matchStatus);
 
 			String matchTime = getMatchTime(doc);
 			if (!matchTime.equals("") && !matchStatus.equals("Não iniciada")) {
+				
+				//TEMPO DA PARTIDA
 				LOGGER.info("Tempo da partida: {}", matchTime);
-				LOGGER.info("Placar do time da casa: {}", formatScoreToInteger(getTeamScore(doc, DIV_HOME_SCORE)));
-				LOGGER.info("Placar do time visitante: {}", formatScoreToInteger(getTeamScore(doc, DIV_VISITOR_SCORE)));
-				LOGGER.info("Jogadores que fizeram gol da equipe casa: {}",
-						getTeamScoringPlayers(doc, DIV_HOME_SCORING_PLAYERS));
-				LOGGER.info("Jogadores que fizeram gol da equipe visitante: {}",
-						getTeamScoringPlayers(doc, DIV_VISITOR_SCORING_PLAYERS));
+				partida.setTempoPartida(matchTime);
+				
+				//PLACARES
+				Integer placarEquipeCasa = formatScoreToInteger(getTeamScore(doc, DIV_HOME_SCORE));
+				Integer placarEquipeVisitante = formatScoreToInteger(getTeamScore(doc, DIV_VISITOR_SCORE));
+				LOGGER.info("Placar do time da casa: {}", placarEquipeCasa);
+				LOGGER.info("Placar do time visitante: {}", placarEquipeVisitante);
+				partida.setPlacarEquipeCasa(placarEquipeCasa);
+				partida.setPlacarEquipeVisitante(placarEquipeVisitante);
+				
+				//QUEM FEZ GOLS
+				String golsEquipeCasa = getTeamScoringPlayers(doc, DIV_HOME_SCORING_PLAYERS);
+				String golsEquipeVisitante = getTeamScoringPlayers(doc, DIV_VISITOR_SCORING_PLAYERS);
+				LOGGER.info("Jogadores que fizeram gol da equipe casa: {}", golsEquipeCasa);
+				LOGGER.info("Jogadores que fizeram gol da equipe visitante: {}", golsEquipeVisitante);
+				partida.setGolsEquipeCasa(golsEquipeCasa);
+				partida.setGolsEquipeVisitante(golsEquipeVisitante);
 
+				//PLACAR DE PENALTIS
 				Integer extendedHomeScore = getPenalities(doc, CASA);
-				LOGGER.info("Placar extendido da casa: {}", extendedHomeScore);
-
 				Integer extendedVisitorScore = getPenalities(doc, VISITANTE);
-				LOGGER.info("Placar extendido visitantes: {}", extendedVisitorScore);
+				LOGGER.info("Placar estendido da casa: {}", extendedHomeScore);
+				LOGGER.info("Placar estendido visitantes: {}", extendedVisitorScore);
+				partida.setPlacarEstendidoEquipeCasa(extendedHomeScore);
+				partida.setPlacarEstendidoEquipeVisitante(extendedVisitorScore);
 			}
 
+			//TOTAL DE PARTIDAS NA PAGINA INICIAL
 			Integer totalMatches = getAllMatches(doc);
 			if (!totalMatches.equals(0)) {
 				LOGGER.info("Existem {} partidas registradas na página inicial", totalMatches);
 			}
 
+			//NOME DAS EQUIPES
 			List<String> names = getTeamNames(doc);
 			if (!names.isEmpty()) {
-				LOGGER.info("Time da casa: {}", names.get(0));
-				LOGGER.info("Time visitante: {}", names.get(1));
+				String casa = names.get(0);
+				String visitante = names.get(1);
+				
+				LOGGER.info("Time da casa: {}", casa);
+				LOGGER.info("Time visitante: {}", visitante);
+				
+				partida.setNomeEquipeCasa(casa);
+				partida.setNomeEquipeVisitante(visitante);
 			}
 
 //			List<String> logos = getTeamLogos(doc);
@@ -234,5 +260,18 @@ public class ScrappingUtil {
 			valor = 0;
 		}
 		return valor;
+	}
+	
+	private String assembleGoogleURL(String homeTeam, String visitorTeam) {
+		try {
+			String home = homeTeam.replace(" ", "+").replace("-", "+");
+			String visitor = visitorTeam.replace(" ", "+").replace("-", "+");
+			
+			return BASE_URL_GOOGLE + home + "+x+" + visitor + COMPLEMENTO_URL_GOOGLE;
+		} catch(Exception e) {
+			LOGGER.error("{}", e.getMessage());
+		}
+		
+		return null;
 	}
 }
