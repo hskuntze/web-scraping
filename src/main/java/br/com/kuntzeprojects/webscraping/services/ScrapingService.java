@@ -13,6 +13,7 @@ import br.com.kuntzeprojects.webscraping.util.Status;
 @Service
 public class ScrapingService {
 
+	@Autowired
 	private ScrapingUtil scrapingUtil;
 
 	@Autowired

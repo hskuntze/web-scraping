@@ -36,14 +36,6 @@ public class ScrapingUtil {
 
 	private static final String DIV_HOME_SCORING_PLAYERS = "div[class*=imso_gs__left-team]";
 	private static final String DIV_VISITOR_SCORING_PLAYERS = "div[class*=imso_gs__right-team]";
-
-	public static void main(String[] args) {
-		ScrapingUtil scrapping = new ScrapingUtil();
-		
-		String url = scrapping.assembleGoogleURL("são paulo", "santos");
-
-		scrapping.getMatchInfo(url);
-	}
 	
 	public String assembleGoogleURL(String homeTeam, String visitorTeam) {
 		try {

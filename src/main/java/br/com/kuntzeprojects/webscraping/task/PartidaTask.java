@@ -48,7 +48,7 @@ public class PartidaTask {
 		startAgenda("taskPartidaDomingosVespertino()");
 	}
 	
-	@Scheduled(cron = "0/30 * 09-10 * * TUE", zone = TIMEZONE)
+	@Scheduled(cron = "0/30 * 16-19 * * TUE", zone = TIMEZONE)
 	public void teste() {
 		startAgenda("taskTeste()");
 	}
