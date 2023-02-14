@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import br.com.kuntzeprojects.webscraping.dto.PartidaGoogleDTO;
 import br.com.kuntzeprojects.webscraping.exceptions.JSoupConnectionException;
 
-public class ScrappingUtil {
+public class ScrapingUtil {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ScrappingUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ScrapingUtil.class);
 
 	private static final String BASE_URL_GOOGLE = "https://www.google.com/search?q=";
 	private static final String COMPLEMENTO_URL_GOOGLE = "&hl=pt-BR";
@@ -38,11 +38,24 @@ public class ScrappingUtil {
 	private static final String DIV_VISITOR_SCORING_PLAYERS = "div[class*=imso_gs__right-team]";
 
 	public static void main(String[] args) {
-		ScrappingUtil scrapping = new ScrappingUtil();
+		ScrapingUtil scrapping = new ScrapingUtil();
 		
 		String url = scrapping.assembleGoogleURL("são paulo", "santos");
 
 		scrapping.getMatchInfo(url);
+	}
+	
+	public String assembleGoogleURL(String homeTeam, String visitorTeam) {
+		try {
+			String home = homeTeam.replace(" ", "+").replace("-", "+");
+			String visitor = visitorTeam.replace(" ", "+").replace("-", "+");
+			
+			return BASE_URL_GOOGLE + home + "+x+" + visitor + COMPLEMENTO_URL_GOOGLE;
+		} catch(Exception e) {
+			LOGGER.error("{}", e.getMessage());
+		}
+		
+		return null;
 	}
 
 	public PartidaGoogleDTO getMatchInfo(String url) {
@@ -56,12 +69,12 @@ public class ScrappingUtil {
 			LOGGER.info("Título da página: {}", title);
 
 			//STATUS DA PARTIDA
-			String matchStatus = handleMatchStatus(getMatchStatus(doc));
-			LOGGER.info("Status da partida: {}", matchStatus);
+			Status matchStatus = getMatchStatus(doc);
+			LOGGER.info("Status da partida: {}", handleMatchStatus(matchStatus));
 			partida.setStatusPartida(matchStatus);
 
 			String matchTime = getMatchTime(doc);
-			if (!matchTime.equals("") && !matchStatus.equals("Não iniciada")) {
+			if (!matchTime.equals("") && !handleMatchStatus(matchStatus).equals("Não iniciada")) {
 				
 				//TEMPO DA PARTIDA
 				LOGGER.info("Tempo da partida: {}", matchTime);
@@ -260,18 +273,5 @@ public class ScrappingUtil {
 			valor = 0;
 		}
 		return valor;
-	}
-	
-	private String assembleGoogleURL(String homeTeam, String visitorTeam) {
-		try {
-			String home = homeTeam.replace(" ", "+").replace("-", "+");
-			String visitor = visitorTeam.replace(" ", "+").replace("-", "+");
-			
-			return BASE_URL_GOOGLE + home + "+x+" + visitor + COMPLEMENTO_URL_GOOGLE;
-		} catch(Exception e) {
-			LOGGER.error("{}", e.getMessage());
-		}
-		
-		return null;
 	}
 }
