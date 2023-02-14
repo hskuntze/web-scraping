@@ -2,6 +2,7 @@ package br.com.kuntzeprojects.webscraping.dto;
 
 import java.io.Serializable;
 
+import br.com.kuntzeprojects.webscraping.util.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.Setter;
 public class PartidaGoogleDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private String statusPartida;
+	private Status statusPartida;
 	private String tempoPartida;
 	
 	//EQUIPE CASA
